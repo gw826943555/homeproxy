@@ -8,7 +8,6 @@
 'use strict';
 
 import { readfile, writefile } from 'fs';
-import { isnan } from 'math';
 import { connect } from 'ubus';
 import { cursor } from 'uci';
 
@@ -168,8 +167,12 @@ function parse_dnsquery(strquery) {
 		return null;
 
 	let querys = [];
-	for (let i in strquery)
-		isnan(int(i)) ? push(querys, i) : push(querys, int(i));
+	for (let i in strquery) {
+		/* int() yields NaN for non-numeric query types such as "A" or "AAAA". */
+		let n = int(i);
+
+		(n !== n) ? push(querys, i) : push(querys, n);
+	}
 
 	return querys;
 
